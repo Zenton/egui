@@ -44,6 +44,33 @@ impl FullOutput {
     }
 }
 
+/// What egui emits when [`crate::Context::end_partial_frame`] is called.
+///
+/// The backend should use this.
+///
+/// This is designed to enable separating of various meshes.
+#[derive(Clone, Default, PartialEq)]
+pub struct PartialOutput {
+    /// If `true`, egui is requesting immediate repaint (i.e. on the next frame)
+    /// for the shapes rendered so far (since `begin_frame` or the previous `end_partial_frame`).
+    ///
+    /// This happens for instance when there is an animation, or if a user has called `Context::request_repaint()`.
+    pub needs_repaint: bool,
+
+    /// A subset of the future texture delta that will be applied at the end of
+    /// the current frame. The textures present in [`crate::FutureTexturesDelta::set`]
+    /// must be available to the partial frame to render correctly.
+    ///
+    /// Backends should use this to get references to the textures that will be
+    /// set at the end of this frame.
+    pub textures_delta: epaint::textures::FutureTexturesDelta,
+
+    /// What to paint.
+    ///
+    /// You can use [`crate::Context::tessellate`] to turn this into triangles.
+    pub shapes: Vec<epaint::ClippedShape>,
+}
+
 /// The non-rendering part of what egui emits each frame.
 ///
 /// You can access (and modify) this with [`crate::Context::output`].

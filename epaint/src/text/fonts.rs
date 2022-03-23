@@ -375,6 +375,11 @@ impl Fonts {
         self.lock().fonts.atlas.lock().take_delta()
     }
 
+    /// Whether the font image has changed. This is used when generating partial outputs.
+    pub fn font_image_has_delta(&self) -> bool {
+        self.lock().fonts.atlas.lock().has_delta()
+    }
+
     /// Access the underlying [`FontsAndCache`].
     #[doc(hidden)]
     #[inline]

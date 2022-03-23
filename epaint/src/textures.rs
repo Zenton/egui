@@ -1,5 +1,5 @@
 use crate::{ImageData, ImageDelta, TextureId};
-use ahash::AHashMap;
+use ahash::{AHashMap, AHashSet};
 
 // ----------------------------------------------------------------------------
 
@@ -100,6 +100,13 @@ impl TextureManager {
         std::mem::take(&mut self.delta)
     }
 
+    /// Generates a FutureTexturesDelta based off the current delta.
+    pub fn future_delta(&self) -> FutureTexturesDelta {
+        FutureTexturesDelta {
+          set: self.delta.set.keys().cloned().collect(),
+        }
+    }
+
     /// Get meta-data about a specific texture.
     pub fn meta(&self, id: TextureId) -> Option<&TextureMeta> {
         self.metas.get(&id)
@@ -141,6 +148,15 @@ impl TextureMeta {
 }
 
 // ----------------------------------------------------------------------------
+
+/// A delta that will be relevant for a partial frame.
+/// This is used to determine which textures a partial frame will need to access
+/// to render correctly.
+#[derive(Clone, Default, PartialEq)]
+pub struct FutureTexturesDelta {
+    /// The textures that will be set.
+    pub set: AHashSet<TextureId>,
+}
 
 /// What has been allocated and freed during the last period.
 ///

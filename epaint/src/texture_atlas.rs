@@ -89,6 +89,11 @@ impl TextureAtlas {
         }
     }
 
+    /// Whether there have been changes since the last frame.
+    pub fn has_delta(&mut self) -> bool {
+        matches!(self.dirty, Rectu::NOTHING)
+    }
+
     /// Returns the coordinates of where the rect ended up,
     /// and invalidates the region.
     pub fn allocate(&mut self, (w, h): (usize, usize)) -> ((usize, usize), &mut AlphaImage) {

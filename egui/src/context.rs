@@ -2,7 +2,7 @@
 
 use crate::{
     animation_manager::AnimationManager, data::output::PlatformOutput, frame_state::FrameState,
-    input_state::*, layers::GraphicLayers, memory::Options, output::FullOutput, TextureHandle, *,
+    input_state::*, layers::GraphicLayers, memory::Options, output::{FullOutput, PartialOutput}, TextureHandle, *,
 };
 use epaint::{mutex::*, stats::*, text::Fonts, TessellationOptions, *};
 
@@ -790,6 +790,35 @@ impl Context {
             needs_repaint,
             textures_delta,
             shapes,
+        }
+    }
+
+    /// Partially ends the current frame by exporting the current texture deltas
+    /// and the shapes drawn so far. This can be used to use one egui-ctx
+    /// Drains the current shapes from the context.
+    /// This should be called between [Self::begin_frame] and [Self::end_frame].
+    pub fn end_partial_frame(&self) -> PartialOutput {
+        // Drain the current shapes.
+        let shapes = self.drain_paint_lists();
+
+        // Determine the partial textures.
+        let textures_delta = {
+            let ctx_impl = self.read();
+            let mut texture_delta = ctx_impl.tex_manager.0.read().future_delta();
+            if ctx_impl.fonts.as_ref().unwrap().font_image_has_delta() {
+                texture_delta.set.insert(TextureId::default());
+            }
+            texture_delta
+        };
+
+        // TODO: Reset repaint_requests to the state before this partial frame
+        //       so future partial frames are not affected by this partial frame.
+        let needs_repaint = self.read().repaint_requests > 0;
+
+        PartialOutput {
+            shapes,
+            textures_delta,
+            needs_repaint,
         }
     }
 
