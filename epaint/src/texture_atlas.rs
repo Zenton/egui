@@ -91,7 +91,7 @@ impl TextureAtlas {
 
     /// Whether there have been changes since the last frame.
     pub fn has_delta(&mut self) -> bool {
-        matches!(self.dirty, Rectu::NOTHING)
+        !matches!(self.dirty, Rectu::NOTHING)
     }
 
     /// Returns the coordinates of where the rect ended up,

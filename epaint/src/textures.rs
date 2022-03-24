@@ -103,7 +103,7 @@ impl TextureManager {
     /// Generates a FutureTexturesDelta based off the current delta.
     pub fn future_delta(&self) -> FutureTexturesDelta {
         FutureTexturesDelta {
-          set: self.delta.set.keys().cloned().collect(),
+            set: self.delta.set.keys().cloned().collect(),
         }
     }
 
