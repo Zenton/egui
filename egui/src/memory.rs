@@ -79,7 +79,7 @@ pub struct Memory {
     #[cfg_attr(feature = "persistence", serde(skip))]
     pub(crate) drag_value: crate::widgets::drag_value::MonoState,
 
-    pub(crate) areas: Areas,
+    pub areas: Areas,
 
     /// Which popup-window is open (if any)?
     /// Could be a combo box, color picker, menu etc.
@@ -505,7 +505,7 @@ impl Areas {
         &self.order
     }
 
-    pub(crate) fn set_state(&mut self, layer_id: LayerId, state: area::State) {
+    pub fn set_state(&mut self, layer_id: LayerId, state: area::State) {
         self.visible_current_frame.insert(layer_id);
         self.areas.insert(layer_id.id, state);
         if !self.order.iter().any(|x| *x == layer_id) {
